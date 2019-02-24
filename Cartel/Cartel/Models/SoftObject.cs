@@ -57,25 +57,29 @@ namespace Cartel.Models {
 		}
 
 		public void Draw(SpriteBatch spriteBatch, int x, int y) {
+			Draw(spriteBatch, x, y, DrawLayer.SoftObject);
+		}
+
+		public void Draw(SpriteBatch spriteBatch, int x, int y, float drawLayer) {
 			if (Texture == null) {
 				return;
 			}
 
 			if (IsSelected) {
-				ShapeManager.DrawRectangle(spriteBatch, new Rectangle(x * World.BlockSize, y * World.BlockSize, World.BlockSize, World.BlockSize), Color.Transparent, Color.Red);
+				ShapeManager.DrawRectangle(spriteBatch, new Rectangle(x, y, World.BlockSize, World.BlockSize), Color.Transparent, Color.Red);
 			}
 
 			spriteBatch.Draw(Texture,
-				new Rectangle(x * World.BlockSize, y * World.BlockSize, World.BlockSize, World.BlockSize),
+				new Rectangle(x, y, World.BlockSize, World.BlockSize),
 				new Rectangle(0, 0, Texture.Width, Texture.Height),
 				Color.White,
 				0.0f,
 				new Vector2(0),
 				SpriteEffects.None,
-				DrawLayer.SoftObject
+				drawLayer
 			);
 
-			spriteBatch.DrawString(AssetManager.GetDefault<SpriteFont>(), "" + Count, new Vector2(x * World.BlockSize, y * World.BlockSize), Color.Red, 0f, Vector2.Zero, 1f, SpriteEffects.None, DrawLayer.SoftObject + 0.01f);
+			spriteBatch.DrawString(AssetManager.GetDefault<SpriteFont>(), "" + Count, new Vector2(x, y), Color.Red, 0f, Vector2.Zero, 1f, SpriteEffects.None, drawLayer + 0.01f);
 		}
 
 		public List<SoftObject> Split() {

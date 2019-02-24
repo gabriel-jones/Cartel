@@ -15,9 +15,12 @@ namespace Cartel.Models.Zones {
 
 		public override void Update(float deltaTime) {
 			foreach(Cell cell in Cells) {
-				if (cell.CanPlant && cell.World.JobManager.JobsForCell(cell).FirstOrDefault(j => j is GrowJob) == null) {
+				Job job = cell.World.JobManager.JobsForCell(cell).FirstOrDefault(j => j is GrowJob);
+				if (job == null && cell.CanPlant) {
 					GrowJob growJob = new GrowJob(cell, plantType);
 					cell.World.JobManager.AddJob(growJob);
+				} else if (job != null && !cell.CanPlant) {
+					cell.World.JobManager.RemoveJob(job);
 				}
 			}
 			base.Update(deltaTime);

@@ -74,22 +74,23 @@ namespace Cartel.Managers {
 				for (int y = (int)originWorldSpace.Y; y <= (int)boundsWorldSpace.Y; y++) {
 					Cell cell = world.GetCellAt(x, y);
 					if (cell != null) {
-						cell.Tile.Draw(spriteBatch, x, y);
+						if (cell.Floor != null) {
+							cell.Floor.Draw(spriteBatch, x, y);
+						} else {
+							cell.Tile.Draw(spriteBatch, x, y);
+						}
 					}
 				}
 			}
 
 			foreach (Zone zone in world.Zones) {
-				zone.Draw(spriteBatch, currentView == ViewMode.Rooms ? 1.0f : 0.25f);
+				zone.Draw(spriteBatch, currentView == ViewMode.Rooms ? 0.1f : 0.01f);
 			}
 
 			for (int x = (int)originWorldSpace.X; x <= (int)boundsWorldSpace.X; x++) {
 				for (int y = (int)originWorldSpace.Y; y <= (int)boundsWorldSpace.Y; y++) {
 					Cell cell = world.GetCellAt(x, y);
 					if (cell != null) {
-						if (cell.Floor != null) {
-							cell.Floor.Draw(spriteBatch, x, y);
-						}
 						if (cell.Structure != null) {
 							cell.Structure.Draw(spriteBatch, x, y);
 						}
@@ -101,7 +102,7 @@ namespace Cartel.Managers {
 						}
 
 						if (cell.SoftObject != null) {
-							cell.SoftObject.Draw(spriteBatch, x, y);
+							cell.SoftObject.Draw(spriteBatch, x * World.BlockSize, y * World.BlockSize);
 						}
 					}
 				}

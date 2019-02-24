@@ -42,13 +42,13 @@ namespace Cartel.Models.Zones {
 
 		public virtual void Update(float deltaTime) { }
 
-		public void Draw(SpriteBatch spriteBatch, float opacity = 1.0f) {
+		public void Draw(SpriteBatch spriteBatch, float opacity) {
 			foreach (Cell cell in cells) {
 				DrawAtCell(spriteBatch, cell, opacity, true);
 			}
 		}
 
-		public void DrawAtCell(SpriteBatch spriteBatch, Cell cell, float opacity = 1.0f, bool withBorder = true) {
+		public void DrawAtCell(SpriteBatch spriteBatch, Cell cell, float opacity, bool withBorder = true) {
 			List<Cell> neighbors = cell.GetNeighbors(false);
 			bool north = neighbors[0] == null || neighbors[0].Zone != this;
 			bool east = neighbors[1] == null || neighbors[1].Zone != this;
@@ -60,9 +60,9 @@ namespace Cartel.Models.Zones {
 				mask = new BitArray(4, false);
 			}
 			if (IsSelected) {
-				opacity = 1.0f;
+				opacity = 0.25f;
 			}
-			ShapeManager.DrawRectangle(spriteBatch, area, new Color(1f, 0, 0, 0.25f * opacity), new Color(0, 0, 1f, 0.25f * opacity), mask, 1f);
+			ShapeManager.DrawRectangle(spriteBatch, area, new Color(1f, 0, 0, opacity), new Color(0, 0, 1f, opacity), mask, DrawLayer.Zone);
 		}
 	}
 }

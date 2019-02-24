@@ -109,17 +109,21 @@ namespace Cartel.GUI.Tasks {
 
 				Zone target = factory();
 				foreach (Cell cell in cells) {
-					if (cell.MovementCost == 0 || cell.Zone != null) {
+					if (cell.MovementCost == 0) {
 						continue;
 					}
 					List<Cell> neighbors = cell.GetNeighbors(false);
+					neighbors.Add(cell);
 					foreach(Cell neighbor in neighbors) {
-						if (neighbor.Zone != null && selectedZones.Contains(neighbor.Zone)) { // This cell has a neighbor that has a selected zone in it
+						if (neighbor != null && neighbor.Zone != null && selectedZones.Contains(neighbor.Zone)) { // This cell has a neighbor that has a selected zone in it
 							target = neighbor.Zone;
 						}
 					}
 				}
 				foreach (Cell cell in cells) {
+					if (cell.MovementCost == 0) {
+						continue;
+					}
 					target.AddCell(cell);
 				}
 				if (!cells.First().World.Zones.Contains(target)) {

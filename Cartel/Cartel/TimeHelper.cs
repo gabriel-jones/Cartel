@@ -10,7 +10,7 @@ namespace Cartel {
 	}
 
 	public class TimeHelper {
-		static float realMinutesPerGameDay = 1f; // Readable
+		static float realMinutesPerGameDay = 20f; // Readable
 
 		public static float RealSecondsPerGameDay {
 			get {

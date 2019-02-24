@@ -149,6 +149,21 @@ namespace Cartel.Models {
 				DrawLayer.Pawn
 			);
 
+			if (carrying != null) {
+				Point drawCarrying = new Point(x, y);
+				int offset = World.BlockSize / 4;
+				if (direction == Facing.North) {
+					drawCarrying.Y -= offset;
+				} else if (direction == Facing.East) {
+					drawCarrying.X += offset;
+				} else if (direction == Facing.South) {
+					drawCarrying.Y += offset;
+				} else if (direction == Facing.West) {
+					drawCarrying.X -= offset;
+				}
+				carrying.Draw(spriteBatch, drawCarrying.X, drawCarrying.Y, DrawLayer.Pawn - 0.02f);
+			}
+
 			if (IsSelected) {
 				ShapeManager.DrawCircle(spriteBatch, new Point(x + World.BlockSize / 2, y + World.BlockSize / 2), World.BlockSize / 2, Color.Red);
 			}

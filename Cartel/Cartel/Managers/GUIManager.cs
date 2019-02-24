@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Cartel.Managers {
 	public class GUIManager {
@@ -47,8 +48,18 @@ namespace Cartel.Managers {
 			for (int i = 0; i < 5; i++) {
 				Button speedButton = new Button(new Rectangle(10 + (i * (10 + 50)), 10 + (controls.Count - i) * (10 + 30), 50, 30), (i == 0 ? "*" : i + "x"));
 				speedButton.SetUserInfo("targetSpeed", (float)i);
-				AddControl(speedButton, (button, handler) => {
+				if (i == 1) {
+					speedButton.SetActive(true);
+				}
+				AddControl(speedButton, (button, manager) => {
 					world.SetGameSpeed((float)button.UserInfo["targetSpeed"]);
+					manager.Controls.ForEach((ctr) => {
+						Button b = (Button)ctr;
+						if (b != null && b != button && b.UserInfo.ContainsKey("targetSpeed")) {
+							b.SetActive(false);
+						}
+					});
+					button.SetActive(true);
 				});
 			}
 		}
@@ -63,14 +74,16 @@ namespace Cartel.Managers {
 		}
 
 		public void AddTask(String name, InputTask task) {
-			AddControl(new Button(new Rectangle(10, 10 + controls.Count * (10 + 30), 150, 30), name), (control, manager) => {
+			Button taskButton = new Button(new Rectangle(10, 10 + controls.Count * (10 + 30), 150, 30), name);
+			taskButton.SetUserInfo("task", true);
+			AddControl(taskButton, (control, manager) => {
 				Button button = (Button)control;
 				if (button == null) {
 					return;
 				}
 				manager.Controls.ForEach((ctr) => {
 					Button b = (Button)ctr;
-					if (b != null && b != button) {
+					if (b != null && b != button && b.UserInfo.ContainsKey("task")) {
 						b.SetActive(false);
 					}
 				});
@@ -95,6 +108,11 @@ namespace Cartel.Managers {
 			if (previous != null) {
 				if (current.IsKeyUp(Keys.Space) && previous.IsKeyDown(Keys.Space)) {
 					world.SetGameSpeed(world.GameSpeed == 0 ? 1 : 0);
+					List<Control> speedControls = controls.Where(c => c.UserInfo.ContainsKey("targetSpeed")).ToList();
+					speedControls.ForEach((ctr) => {
+						ctr.SetActive(false);
+					});
+					speedControls[world.GameSpeed == 0 ? 0 : 1].SetActive(true);
 				}
 			}
 
