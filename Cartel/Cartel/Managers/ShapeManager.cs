@@ -29,30 +29,30 @@ namespace Cartel.Managers {
 			spriteBatch.Draw(circleTexture, new Rectangle(center.X - radius, center.Y - radius, 2 * radius, 2 * radius), null, borderColor, 0f, Vector2.Zero, SpriteEffects.None, DrawLayer.Primitive);
 		}
 
-		public static void DrawRectangle(SpriteBatch spriteBatch, Rectangle area, Color fillColor, Color borderColor, BitArray mask = null) {
+		public static void DrawRectangle(SpriteBatch spriteBatch, Rectangle area, Color fillColor, Color borderColor, BitArray mask = null, float drawLayer = 1.0f) {
 			if (mask == null) {
 				mask = new BitArray(4, true);
 			}
 
 			int thickness = 2;
-			spriteBatch.Draw(basicTexture, area, null, fillColor, 0f, Vector2.Zero, SpriteEffects.None, DrawLayer.Primitive - 0.01f); // fill
+			spriteBatch.Draw(basicTexture, area, null, fillColor, 0f, Vector2.Zero, SpriteEffects.None, drawLayer - 0.01f); // fill
 
 			// N E S W
 			if (mask[0]) {
 				//DrawLine(spriteBatch, new Point(area.Left, area.Top), new Point(area.Right, area.Top), borderColor); // top
-				spriteBatch.Draw(basicTexture, new Rectangle(area.X, area.Y, area.Width, thickness), null, borderColor, 0f, Vector2.Zero, SpriteEffects.None, DrawLayer.Primitive);
+				spriteBatch.Draw(basicTexture, new Rectangle(area.X, area.Y, area.Width, thickness), null, borderColor, 0f, Vector2.Zero, SpriteEffects.None, drawLayer);
 			}
 			if (mask[1]) {
 				//DrawLine(spriteBatch, new Point(area.Right, area.Top), new Point(area.Right, area.Bottom), borderColor); // right
-				spriteBatch.Draw(basicTexture, new Rectangle((area.Right - thickness), area.Y, thickness, area.Height), null, borderColor, 0f, Vector2.Zero, SpriteEffects.None, DrawLayer.Primitive);
+				spriteBatch.Draw(basicTexture, new Rectangle((area.Right - thickness), area.Y, thickness, area.Height), null, borderColor, 0f, Vector2.Zero, SpriteEffects.None, drawLayer);
 			}
 			if (mask[2]) {
 				//DrawLine(spriteBatch, new Point(area.Left, area.Bottom), new Point(area.Right, area.Bottom), borderColor); // bottom
-				spriteBatch.Draw(basicTexture, new Rectangle(area.X, area.Bottom - thickness, area.Width, thickness), null, borderColor, 0f, Vector2.Zero, SpriteEffects.None, DrawLayer.Primitive);
+				spriteBatch.Draw(basicTexture, new Rectangle(area.X, area.Bottom - thickness, area.Width, thickness), null, borderColor, 0f, Vector2.Zero, SpriteEffects.None, drawLayer);
 			}
 			if (mask[3]) {
 				//DrawLine(spriteBatch, new Point(area.Left, area.Top), new Point(area.Left, area.Bottom), borderColor); // left
-				spriteBatch.Draw(basicTexture, new Rectangle(area.X, area.Y, thickness, area.Height), null, borderColor, 0f, Vector2.Zero, SpriteEffects.None, DrawLayer.Primitive);
+				spriteBatch.Draw(basicTexture, new Rectangle(area.X, area.Y, thickness, area.Height), null, borderColor, 0f, Vector2.Zero, SpriteEffects.None, drawLayer);
 			}
 
 		}

@@ -57,6 +57,14 @@ namespace Cartel.Models {
 			get { return dayCurrentTime / dayTime; }
 		}
 
+		public float LightIntensity {
+			get {
+				// I don't fuckin know lol
+				float dayValue = (float)Math.Sin((DayProgress / 1.4f) * (float)Math.PI * 2f + 5f); 
+				return Math.Min(Math.Max(dayValue, 0.1f), 1.0f);
+			}
+		}
+
 		protected Predicate<Cell> ValidSoftObjectPlacementPredicate(SoftObject target) {
 			return (cell) => {
 				SoftObject placement = cell.SoftObject;

@@ -97,6 +97,7 @@
     <Compile Include="Models\Jobs\DestroyJob.cs" />
     <Compile Include="Models\Jobs\GrowJob.cs" />
     <Compile Include="Models\Jobs\HarvestJob.cs" />
+    <Compile Include="Models\Jobs\HaulJob.cs" />
     <Compile Include="Models\Light.cs" />
     <Compile Include="Models\ObjectInfo.cs" />
     <Compile Include="Models\Pawn.cs" />

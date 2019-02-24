@@ -35,6 +35,15 @@ namespace Cartel.Models {
 			get { return type; }
 		}
 
+		public bool CanGrow {
+			get {
+				if (type == FloorType.Concrete) {
+					return false;
+				}
+				return true;
+			}
+		}
+
 		// Constructor
 		public Floor(Cell cell, FloorType floorType) : base(cell) {
 			this.type = floorType;

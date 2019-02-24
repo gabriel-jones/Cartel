@@ -2,11 +2,13 @@
 using Cartel.Interfaces;
 using Cartel.Models;
 using Cartel.Models.Jobs;
+using Cartel.Models.Zones;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Cartel.Managers {
 	public class InputController {
@@ -139,6 +141,13 @@ namespace Cartel.Managers {
 					selectedObjects = new List<ISelectable>();
 				}
 
+				// If there's a zone under the mouse and nothing on top of it
+				if (selectedCell != null && selectedCell.Zone != null && targetsSelected.Count == 0) {
+					selectedObjects.Add(selectedCell.Zone);
+					selectedObjects.ForEach(t => t.IsSelected = true);
+					return;
+				}
+
 				for (int i = 0; i < targetsSelected.Count; i++) { // For every selected target,
 					ISelectable target = targetsSelected[i];
 					if (!selectedObjects.Contains(target)) { // Check if it's already selected.
@@ -176,6 +185,7 @@ namespace Cartel.Managers {
 			if (cell == null) {
 				return null;
 			}
+
 			foreach (Pawn pawn in world.Pawns) {
 				// If mouse over pawn
 				Rectangle pawnBounds = new Rectangle((int)pawn.X * World.BlockSize, (int)pawn.Y * World.BlockSize, World.BlockSize, World.BlockSize);
@@ -251,7 +261,7 @@ namespace Cartel.Managers {
 							}
 						}
 					}
-					currentTask.Action?.Invoke(selectedCells);
+					currentTask.Action?.Invoke(selectedCells, selectedObjects);
 				}
 			}
 		}
@@ -296,6 +306,16 @@ namespace Cartel.Managers {
 				}
 				if (currentTask != null && currentTask.CancelAction != null) {
 					currentTask.CancelAction(selectedCells);
+				} else if (selectedObjects.Count > 0) {
+					Cell targetCell = selectedCells.LastOrDefault();
+					if (targetCell == null) {
+						return;
+					}
+					foreach (ISelectable selected in selectedObjects) {
+						if (selected is Pawn) {
+							((Pawn)selected).GoToCell(targetCell);
+						}
+					}
 				}
 			}
 		}
@@ -329,6 +349,11 @@ namespace Cartel.Managers {
 						}
 					}
 				}
+			}
+
+			if (isDragging && currentTask == null) {
+				ShapeManager.DrawRectangle(spriteBatch, dragArea, Color.Transparent, Color.GreenYellow);
+
 			}
 
 			spriteBatch.End();

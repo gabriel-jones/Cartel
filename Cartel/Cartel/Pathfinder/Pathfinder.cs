@@ -42,7 +42,7 @@ namespace Cartel {
 			PathfinderNode<Cell> startNode = nodes[startCell];
 			PathfinderNode<Cell> goalNode = endCell == null ? null : nodes[endCell];
 
-			if (goalNode.edges.Length == 0 || goalNode.data.MovementCost == 0) {
+			if (goalNode != null && (goalNode.edges.Length == 0 || goalNode.data.MovementCost == 0)) {
 				Console.Error.WriteLine("[Pathfinder Error] Goal node is unreachable: no edges or movement cost is 0");
 				return;
 			}

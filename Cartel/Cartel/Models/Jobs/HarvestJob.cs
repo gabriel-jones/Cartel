@@ -21,7 +21,7 @@ namespace Cartel.Models.Jobs {
 			
 		}
 
-		protected override void CompleteJob() {
+		protected override void CompleteJob(Pawn worker) {
 			if (!(cell.Structure is Plant)) {
 				throw new InvalidCastException();
 			}

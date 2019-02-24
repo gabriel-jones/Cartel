@@ -7,6 +7,7 @@ namespace Cartel {
 	public class DrawLayer {
 		public static float Tile = 0.1f;
 		public static float Floor = 0.2f;
+		public static float Zone = 0.3f;
 		public static float Structure = 0.5f;
 		public static float Blueprint = 0.7f;
 		public static float Pawn = 0.8f;

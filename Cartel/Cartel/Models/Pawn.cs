@@ -32,6 +32,7 @@ namespace Cartel.Models {
 
 		PathfinderAStar pathfinder;
 		float speed = 3.0f;
+		bool isIdling = true;
 
 		SoftObject carrying;
 
@@ -112,7 +113,7 @@ namespace Cartel.Models {
 		}
 
 		public bool IsIdling {
-			get { return currentJob == null; }
+			get { return isIdling; }
 		}
 
 		public Facing Direction {
@@ -136,12 +137,7 @@ namespace Cartel.Models {
 		}
 
 		public void Draw(SpriteBatch spriteBatch, int x, int y) {
-			Color color = Color.White;
-			if (type == PawnType.Gardener) {
-				color = Color.Green;
-			} else if (type == PawnType.Worker) {
-				color = Color.Orange;
-			}
+			Color color = IsIdling ? Color.Green : Color.Orange;
 
 			spriteBatch.Draw(Texture,
 				new Rectangle(x, y , World.BlockSize, World.BlockSize),
@@ -152,7 +148,7 @@ namespace Cartel.Models {
 				SpriteEffects.None,
 				DrawLayer.Pawn
 			);
-			Console.WriteLine(IsSelected);
+
 			if (IsSelected) {
 				ShapeManager.DrawCircle(spriteBatch, new Point(x + World.BlockSize / 2, y + World.BlockSize / 2), World.BlockSize / 2, Color.Red);
 			}
@@ -171,10 +167,20 @@ namespace Cartel.Models {
 			}
 		}
 
+		public void GoToCell(Cell target) {
+			AbandonJob();
+			isIdling = false;
+
+			pathfinder = new PathfinderAStar(world, currentCell, target);
+			if (pathfinder.Length != 0) {
+				destinationCell = target;
+			}
+		}
+
 		void UpdateJob(float deltaTime) {
 			// Find Job
-			jobSearchCooldown -= deltaTime;
-			if (currentJob == null) {
+			if (currentJob == null && IsIdling) {
+				jobSearchCooldown -= deltaTime;
 				if (jobSearchCooldown > 0)
 					return;
 
@@ -185,6 +191,10 @@ namespace Cartel.Models {
 					//destinationCell = currentCell;
 					return;
 				}
+			}
+
+			if (!IsIdling && currentJob == null) {
+				return;
 			}
 
 			if (!currentJob.MeetsBuildRequirements()) {
@@ -234,7 +244,7 @@ namespace Cartel.Models {
 			// Work Job
 			// destinationCell = currentJob.cell;
 			if (currentCell == currentJob.cell || currentCell.GetNeighbors(false).Contains(currentJob.cell)) {
-				currentJob.Progress(deltaTime);
+				currentJob.Progress(deltaTime, this);
 			}
 		}
 
@@ -245,6 +255,7 @@ namespace Cartel.Models {
 				return;
 			}
 
+			isIdling = false;
 			currentJob.SetReserved(true);
 			destinationCell = currentJob.cell;
 			currentJob.RegisterJobCompletedCallback(JobFinished);
@@ -253,7 +264,6 @@ namespace Cartel.Models {
 			if (pathfinder == null) {
 				currentJob.SetReachable(false);
 				AbandonJob();
-				destinationCell = currentCell;
 			}
 		}
 
@@ -281,12 +291,15 @@ namespace Cartel.Models {
 				Console.Error.WriteLine("Job finished for not currentJob: remember to unregister callbacks");
 				return;
 			}
-
+			isIdling = true;
 			currentJob = null;
 		}
 
 		void AbandonJob() {
-			Console.WriteLine("Abandoned job at " + currentJob.cell);
+			if (currentJob == null) {
+				return;
+			}
+			isIdling = true;
 			currentJob.SetReserved(false);
 			currentJob.UnregisterJobCompletedCallback(JobFinished);
 			NextCell = destinationCell = currentCell;
@@ -294,37 +307,33 @@ namespace Cartel.Models {
 			jobSearchCooldown = 0.5f;
 		}
 
-		//float idleCooldown = 0.1f;
+		float idleCooldown = 3f;
 
 		void UpdateMovement(float deltaTime) {
-			/*
-			if (IsIdling) {
+			if (IsIdling && destinationCell == currentCell) {
 				if (idleCooldown <= 0) {
 					Cell randomCell = null;
 					Random rand = new Random();
 					while (randomCell == null) {
 						int x = currentCell.X;
 						int y = currentCell.Y;
-						x += rand.Next(-4, 4);
-						y += rand.Next(-4, 4);
+						x += rand.Next(-2, 2);
+						y += rand.Next(-2, 2);
 						randomCell = world.GetCellAt(x, y);
 					}
 					pathfinder = new PathfinderAStar(world, currentCell, randomCell);
 					destinationCell = pathfinder.LastCell();
-					Console.WriteLine("Idling to " + destinationCell);
-				} else if (currentCell == destinationCell) {
-					pathfinder = null;
-					idleCooldown = 0.1f;
-					Console.WriteLine("Got to idle destination, resetting cooldown");
+					idleCooldown = 3f;
 				} else {
 					idleCooldown -= deltaTime;
-					Console.Write(".");
 				}
+				return;
 			}
-			*/
 
+			// If pawn is at destination, remove pathfinder
 			if (currentCell == destinationCell) {
 				pathfinder = null;
+				isIdling = currentJob == null;
 				return;
 			}
 
@@ -348,7 +357,7 @@ namespace Cartel.Models {
 			int dY = currentCell.Y - nextCell.Y;
 			float travelDistance = (float)Math.Sqrt(Math.Pow(dX, 2) + Math.Pow(dY, 2));
 
-			float frameDistance = speed / nextCell.MovementCost * deltaTime;
+			float frameDistance = (speed * (IsIdling ? 0.5f : 1f)) / nextCell.MovementCost * deltaTime;
 			float framePercentage = frameDistance / travelDistance;
 			movementPercentage += framePercentage;
 

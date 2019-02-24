@@ -89,7 +89,9 @@ namespace Cartel.Models {
 		// Methods
 		public override void Update(float deltaTime) {
 			if (growRemaining > 0) {
-				growRemaining -= deltaTime;
+				if (cell.CanGrow) {
+					growRemaining -= deltaTime;
+				}
 			} else {
 				if (cell.World.JobManager.JobsForCell(cell).FirstOrDefault(job => job is HarvestJob) == null) {
 					cell.World.JobManager.AddJob(new HarvestJob(cell));

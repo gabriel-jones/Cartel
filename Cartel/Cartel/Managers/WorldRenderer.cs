@@ -10,9 +10,15 @@ using System.Text;
 
 namespace Cartel.Managers {
 	class WorldRenderer {
+		public enum ViewMode {
+			Default, Rooms, Utilities
+		}
+
 		World world;
 		SpriteBatch spriteBatch;
 		ViewportManager viewportManager;
+
+		ViewMode currentView = ViewMode.Default;
 
 		RenderTarget2D lightsTarget;
 		RenderTarget2D mainTarget;
@@ -31,6 +37,10 @@ namespace Cartel.Managers {
 
 			lightsTarget = new RenderTarget2D(spriteBatch.GraphicsDevice, viewportManager.Viewport.Width, viewportManager.Viewport.Height);
 			mainTarget = new RenderTarget2D(spriteBatch.GraphicsDevice, viewportManager.Viewport.Width, viewportManager.Viewport.Height);
+		}
+
+		public void SetViewMode(ViewMode mode) {
+			currentView = mode;
 		}
 
 		public void Draw() {
@@ -58,36 +68,32 @@ namespace Cartel.Managers {
 			// Draw world
 			spriteBatch.GraphicsDevice.SetRenderTarget(mainTarget);
 			spriteBatch.GraphicsDevice.Clear(Color.Gray);
-			spriteBatch.Begin(SpriteSortMode.Texture, BlendState.AlphaBlend, null, null, null, null, viewportManager.Camera.Transform);
-			
+			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, viewportManager.Camera.Transform);
+
 			for (int x = (int)originWorldSpace.X; x <= (int)boundsWorldSpace.X; x++) {
 				for (int y = (int)originWorldSpace.Y; y <= (int)boundsWorldSpace.Y; y++) {
 					Cell cell = world.GetCellAt(x, y);
 					if (cell != null) {
-						if (cell.Structure != null) {
-							cell.Structure.Draw(spriteBatch, x, y);
-						} else if (cell.Floor != null) {
-							cell.Floor.Draw(spriteBatch, x, y);
-						} else {
-							cell.Tile.Draw(spriteBatch, x, y);
-						}
+						cell.Tile.Draw(spriteBatch, x, y);
 					}
 				}
 			}
 
-			spriteBatch.End();
-
-
-			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, viewportManager.Camera.Transform);
-
 			foreach (Zone zone in world.Zones) {
-				zone.Draw(spriteBatch);
+				zone.Draw(spriteBatch, currentView == ViewMode.Rooms ? 1.0f : 0.25f);
 			}
 
 			for (int x = (int)originWorldSpace.X; x <= (int)boundsWorldSpace.X; x++) {
 				for (int y = (int)originWorldSpace.Y; y <= (int)boundsWorldSpace.Y; y++) {
 					Cell cell = world.GetCellAt(x, y);
 					if (cell != null) {
+						if (cell.Floor != null) {
+							cell.Floor.Draw(spriteBatch, x, y);
+						}
+						if (cell.Structure != null) {
+							cell.Structure.Draw(spriteBatch, x, y);
+						}
+
 						if (cell.StructureBlueprint != null) {
 							cell.StructureBlueprint.Draw(spriteBatch, x, y);
 						} else if (cell.FloorBlueprint != null) {
@@ -101,6 +107,11 @@ namespace Cartel.Managers {
 				}
 			}
 
+			spriteBatch.End();
+
+
+			spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, viewportManager.Camera.Transform);
+
 			foreach (Pawn pawn in world.Pawns) {
 				pawn.Draw(spriteBatch, (int)(pawn.X * World.BlockSize), (int)(pawn.Y * World.BlockSize));
 			}
@@ -109,7 +120,7 @@ namespace Cartel.Managers {
 			
 			// Combine with lighting
 			lightEffect.Parameters["lightMask"].SetValue(lightsTarget);
-			lightEffect.Parameters["dayProgress"].SetValue(world.DayProgress);
+			lightEffect.Parameters["lightIntensity"].SetValue(world.LightIntensity);
 
 			spriteBatch.GraphicsDevice.SetRenderTarget(null);
 			spriteBatch.GraphicsDevice.Clear(Color.Gray);

@@ -1,4 +1,5 @@
-﻿using Cartel.Models;
+﻿using Cartel.Interfaces;
+using Cartel.Models;
 using Cartel.Models.Jobs;
 using Cartel.Models.Zones;
 using Microsoft.Xna.Framework;
@@ -14,13 +15,13 @@ namespace Cartel.GUI.Tasks {
 	public class InputTask {
 		// Properties
 		public InputMode Mode { get; protected set; }
-		public Action<List<Cell>> Action { get; protected set; }
+		public Action<List<Cell>, List<ISelectable>> Action { get; protected set; }
 		public Action<List<Cell>> CancelAction { get; protected set; }
 		public Predicate<Cell> CanCancel { get; protected set; }
 		public Action<Cell, SpriteBatch> Preview { get; protected set; }
 
 		// Constructor
-		public InputTask(InputMode mode, Action<List<Cell>> action, Action<Cell, SpriteBatch> preview, Action<List<Cell>> cancelAction = null, Predicate<Cell> canCancel = null) {
+		public InputTask(InputMode mode, Action<List<Cell>, List<ISelectable>> action, Action<Cell, SpriteBatch> preview, Action<List<Cell>> cancelAction = null, Predicate<Cell> canCancel = null) {
 			Mode = mode;
 			Action = action;
 			Preview = preview;
@@ -30,7 +31,7 @@ namespace Cartel.GUI.Tasks {
 
 		// Static Methods
 		public static InputTask PawnFactory(PawnType type) {
-			return new InputTask(InputMode.Single, (cells) => {
+			return new InputTask(InputMode.Single, (cells, selected) => {
 				foreach (Cell cell in cells) {
 					cell.World.AddPawn(new Pawn(cell.World, type, cell));
 				}
@@ -41,7 +42,7 @@ namespace Cartel.GUI.Tasks {
 		}
 
 		public static InputTask BlueprintFactory(InputMode mode, Func<Cell, Constructable> construct) {
-			return new InputTask(mode, (cells) => {
+			return new InputTask(mode, (cells, selected) => {
 				foreach (Cell cell in cells) {
 					Blueprint blueprint = new Blueprint(cell.World, construct(cell));
 					if (blueprint != null && cell.World.ValidatePlacement(cell.X, cell.Y, blueprint)) {
@@ -69,7 +70,7 @@ namespace Cartel.GUI.Tasks {
 		}
 
 		public static InputTask SoftObjectFactory(SoftObjectType type, int amount) {
-			return new InputTask(InputMode.Single, (cells) => {
+			return new InputTask(InputMode.Single, (cells, selected) => {
 				foreach (Cell cell in cells) {
 					SoftObject softObject = new SoftObject(type, amount);
 					cell.World.SpawnSoftObject(softObject, cell, softObject.Count);
@@ -78,7 +79,7 @@ namespace Cartel.GUI.Tasks {
 		}
 
 		public static InputTask BulldozeFactory() {
-			return new InputTask(InputMode.Area, (cells) => {
+			return new InputTask(InputMode.Area, (cells, selected) => {
 				foreach (Cell cell in cells) {
 					if (cell.Floor != null) {
 						DestroyJob job = new DestroyJob(cell, cell.Floor);
@@ -95,21 +96,38 @@ namespace Cartel.GUI.Tasks {
 		}
 
 		public static InputTask ZoneFactory(Func<Zone> factory) {
-			return new InputTask(InputMode.Area, (cells) => {
+			return new InputTask(InputMode.Area, (cells, selected) => {
 				if (cells.Count == 0) {
 					return;
 				}
+				List<Zone> selectedZones = new List<Zone>();
+				foreach (ISelectable selectedObject in selected) {
+					if (selectedObject is Zone) {
+						selectedZones.Add((Zone)selectedObject);
+					}
+				}
+
 				Zone target = factory();
 				foreach (Cell cell in cells) {
 					if (cell.MovementCost == 0 || cell.Zone != null) {
 						continue;
 					}
+					List<Cell> neighbors = cell.GetNeighbors(false);
+					foreach(Cell neighbor in neighbors) {
+						if (neighbor.Zone != null && selectedZones.Contains(neighbor.Zone)) { // This cell has a neighbor that has a selected zone in it
+							target = neighbor.Zone;
+						}
+					}
+				}
+				foreach (Cell cell in cells) {
 					target.AddCell(cell);
 				}
-				cells.First().World.AddZone(target);
+				if (!cells.First().World.Zones.Contains(target)) {
+					cells.First().World.AddZone(target);
+				}
 			}, (cell, spriteBatch) => {
 				Zone copy = factory();
-				copy.Draw(spriteBatch, cell, false);
+				copy.DrawAtCell(spriteBatch, cell, 1.0f, false);
 			}, (cells) => {
 				foreach (Cell cell in cells) {
 					if (cell.Zone != null) {

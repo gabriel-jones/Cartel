@@ -32,7 +32,7 @@ namespace Cartel.Models.Jobs {
 			
 		}
 
-		protected override void CompleteJob() {
+		protected override void CompleteJob(Pawn worker) {
 			if (target is Floor) {
 				cell.Floor = null;
 			} else if (target is Structure) {

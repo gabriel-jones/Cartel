@@ -28,7 +28,7 @@ namespace Cartel.Models.Jobs {
 			
 		}
 
-		protected override void CompleteJob() {
+		protected override void CompleteJob(Pawn worker) {
 			cell.Structure = new Plant(cell, plantType);
 		}
 	}

@@ -61,6 +61,10 @@ namespace Cartel.Models {
 				return;
 			}
 
+			if (IsSelected) {
+				ShapeManager.DrawRectangle(spriteBatch, new Rectangle(x * World.BlockSize, y * World.BlockSize, World.BlockSize, World.BlockSize), Color.Transparent, Color.Red);
+			}
+
 			spriteBatch.Draw(Texture,
 				new Rectangle(x * World.BlockSize, y * World.BlockSize, World.BlockSize, World.BlockSize),
 				new Rectangle(0, 0, Texture.Width, Texture.Height),
@@ -71,11 +75,7 @@ namespace Cartel.Models {
 				DrawLayer.SoftObject
 			);
 
-			spriteBatch.DrawString(AssetManager.GetDefault<SpriteFont>(), "" + Count, new Vector2(x * World.BlockSize, y * World.BlockSize), Color.Red);
-
-			if (IsSelected) {
-				ShapeManager.DrawRectangle(spriteBatch, new Rectangle(x * World.BlockSize, y * World.BlockSize, World.BlockSize, World.BlockSize), Color.Transparent, Color.Red);
-			}
+			spriteBatch.DrawString(AssetManager.GetDefault<SpriteFont>(), "" + Count, new Vector2(x * World.BlockSize, y * World.BlockSize), Color.Red, 0f, Vector2.Zero, 1f, SpriteEffects.None, DrawLayer.SoftObject + 0.01f);
 		}
 
 		public List<SoftObject> Split() {

@@ -63,17 +63,17 @@ namespace Cartel.Models {
 			this.isReachable = isReachable;
 		}
 
-		public void Progress(float workTime) {
+		public void Progress(float workTime, Pawn worker) {
 			workAmountRemaining -= workTime;
 
 			if (workAmountRemaining <= 0) { // Job finished
-				Complete();
+				Complete(worker);
 			}
 		}
 
-		public void Complete() {
+		public void Complete(Pawn worker) {
 			jobManager.RemoveJob(this);
-			CompleteJob();
+			CompleteJob(worker);
 			jobCompletedCallback(this);
 		}
 
@@ -115,7 +115,7 @@ namespace Cartel.Models {
 
 		// Abstract Methods
 		protected abstract void CancelJob();
-		protected abstract void CompleteJob();
+		protected abstract void CompleteJob(Pawn worker);
 		public abstract bool CanPawnComplete(Pawn pawn);
 	}
 }

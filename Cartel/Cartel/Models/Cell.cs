@@ -28,6 +28,24 @@ namespace Cartel.Models {
 				return floorBlueprint != null || structureBlueprint != null;
 			}
 		}
+
+		public bool CanPlant {
+			get {
+				if (structure != null) {
+					return false;
+				}
+				if (floor != null && !floor.CanGrow) {
+					return false;
+				}
+				return true;
+			}
+		}
+
+		public bool CanGrow {
+			get {
+				return World.DayProgress > 0.3 && World.DayProgress < 0.8;
+			}
+		}
 		
 		public Tile Tile {
 			get { return tile; }

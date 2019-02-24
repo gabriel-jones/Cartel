@@ -25,7 +25,7 @@ namespace Cartel.Models.Jobs {
 			}
 		}
 
-		protected override void CompleteJob() {
+		protected override void CompleteJob(Pawn worker) {
 			if (cell.FloorBlueprint == constructionBlueprint) {
 				cell.FloorBlueprint = null;
 				cell.Floor = (Floor)constructionBlueprint.Construct;
