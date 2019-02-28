@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Cartel.Models {
 	public class Cell  {
@@ -92,6 +93,16 @@ namespace Cartel.Models {
 					Zone = null;
 				}
 			}
+		}
+
+		public Structure GetOverlappingStructure() {
+			if (structure != null) {
+				return structure;
+			}
+			List<Structure> adjacentStructures = GetNeighbors(false).Where(c => c != null && c.Structure != null).ToList().ConvertAll(c => c.Structure);
+			return adjacentStructures.FirstOrDefault((s) => {
+				return s.Dimensions.X + s.Cell.X > X || s.Dimensions.Y + s.Cell.Y > Y;
+			});
 		}
 
 		public Blueprint StructureBlueprint {

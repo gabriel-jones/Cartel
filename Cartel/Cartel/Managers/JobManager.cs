@@ -35,7 +35,17 @@ namespace Cartel.Managers {
 		}
 
 		public Job FindJobForPawn(Pawn pawn) {
-			return jobs.FirstOrDefault(job => job.CanPawnComplete(pawn) && !job.IsReserved & job.IsReachable);
+			/*
+			if (pawn.Type == PawnType.Worker) {
+				return FindNearestJobForPawn(pawn);
+			}
+			return jobs.FirstOrDefault(job => job.CanPawnComplete(pawn) && !job.IsReserved && job.IsReachable);
+			*/
+			return FindNearestJobForPawn(pawn); //TODO: Is this the best approach?
+		}
+
+		public Job FindNearestJobForPawn(Pawn pawn) {
+			return jobs.OrderBy(j => j.cell.DistanceToCell(pawn.CurrentCell)).FirstOrDefault(j => j.CanPawnComplete(pawn) && !j.IsReserved && j.IsReachable);
 		}
 
 		public void RemovePathfindingFailures() {

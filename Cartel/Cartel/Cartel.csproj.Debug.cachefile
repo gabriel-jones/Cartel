@@ -18,4 +18,7 @@ Content\Textures\tile_atlas.xnb
 Content\Textures\plant_atlas.xnb
 Content\Effects\fx_quad.xnb
 Content\Textures\GUI\gui_circle.xnb
+Content\Textures\HardObjects\bench.xnb
+Content\Textures\SoftObjects\so_indica.xnb
+Content\Textures\light.xnb
 Content\Audio\Songs\song_default.wma

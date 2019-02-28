@@ -1,9 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Cartel.Models {
 	public abstract class Structure: Constructable {
 		// Fields
+		Facing direction = Facing.North;
 
 		// Properties
 		public override abstract Texture2D Texture { get; }
@@ -14,6 +16,22 @@ namespace Cartel.Models {
 
 		public virtual bool IsTraversible {
 			get { return true; }
+		}
+
+		public Facing Direction {
+			get { return direction; }
+		}
+
+		public override Point Dimensions {
+			get {
+				Point dimensions = base.Dimensions;
+				if (direction == Facing.East || direction == Facing.West) {
+					int temp = dimensions.X;
+					dimensions.X = dimensions.Y;
+					dimensions.Y = temp;
+				}
+				return dimensions;
+			}
 		}
 
 		// Constructors

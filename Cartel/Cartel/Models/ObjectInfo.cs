@@ -1,4 +1,5 @@
 ﻿using Cartel.Managers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -6,21 +7,22 @@ using System.Linq;
 using System.Text;
 
 namespace Cartel.Models {
-	public class ObjectInfo {
-		// Enums
-		public enum ObjectType {
-			Door
-		}
+	public enum ObjectType {
+		Door, Bench
+	}
 
+	public class ObjectInfo {
 		// Properties
 		public ObjectType Type { get; protected set; }
-		public Tuple<int, int> Dimensions { get; protected set; }
+		public Point Dimensions { get; protected set; }
 
 		public Texture2D Texture {
 			get {
 				switch (Type) {
 					case ObjectType.Door:
 						return AssetManager.GetAsset<Texture2D>("door");
+					case ObjectType.Bench:
+						return AssetManager.GetAsset<Texture2D>("bench");
 				}
 				return null;
 			}
@@ -36,12 +38,12 @@ namespace Cartel.Models {
 
 		// Constructors
 		public ObjectInfo(ObjectType type) {
-			this.Type = type;
-			this.Dimensions = Tuple.Create(1, 1);
+			Type = type;
+			Dimensions = new Point(1, 1);
 		}
 
-		public ObjectInfo(ObjectType type, Tuple<int, int> dimensions) : this(type) {
-			this.Dimensions = dimensions;
+		public ObjectInfo(ObjectType type, Point dimensions) : this(type) {
+			Dimensions = dimensions;
 		}
 	}
 }

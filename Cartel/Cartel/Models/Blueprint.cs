@@ -33,7 +33,7 @@ namespace Cartel.Models {
 				return;
 			}
 			spriteBatch.Draw(Construct.Texture,
-				new Rectangle(x * World.BlockSize, y * World.BlockSize, World.BlockSize, World.BlockSize),
+				new Rectangle(x * World.BlockSize, y * World.BlockSize, World.BlockSize * Construct.Dimensions.X, World.BlockSize * Construct.Dimensions.Y),
 				CalculateSourceRectangle(),
 				(job != null && job.IsReserved) ? Color.Orange : TintForState(state),
 				0.0f,

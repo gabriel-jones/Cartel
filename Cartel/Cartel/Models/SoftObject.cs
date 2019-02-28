@@ -9,13 +9,12 @@ using Cartel.Interfaces;
 
 namespace Cartel.Models {
 	public enum SoftObjectType {
-		Concrete
+		Concrete, IndicaHarvest
 	}
 
 	public class SoftObject : Interfaces.IDrawable, ISelectable {
 		// Fields
 		SoftObjectType type;
-		int stackCount = 50;
 
 		// Properties
 		public SoftObjectType Type {
@@ -23,7 +22,7 @@ namespace Cartel.Models {
 		}
 
 		public int StackCount {
-			get { return stackCount; }
+			get { return 50; }
 		}
 
 		public int Count { get; protected set; }
@@ -35,6 +34,8 @@ namespace Cartel.Models {
 				switch (type) {
 					case SoftObjectType.Concrete:
 						return AssetManager.GetAsset<Texture2D>("so_concrete");
+					case SoftObjectType.IndicaHarvest:
+						return AssetManager.GetAsset<Texture2D>("so_indica");
 				}
 				return null;
 			}

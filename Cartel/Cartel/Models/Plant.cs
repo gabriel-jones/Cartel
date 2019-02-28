@@ -48,7 +48,7 @@ namespace Cartel.Models {
 					case PlantType.Sativa:
 						return new SoftObject(SoftObjectType.Concrete, 5);
 					case PlantType.Indica:
-						return new SoftObject(SoftObjectType.Concrete, 5);
+						return new SoftObject(SoftObjectType.IndicaHarvest, 5);
 					case PlantType.Poppy:
 						return new SoftObject(SoftObjectType.Concrete, 5);
 					case PlantType.Coca:

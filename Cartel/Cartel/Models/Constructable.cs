@@ -33,8 +33,8 @@ namespace Cartel.Models {
 
 		public abstract Texture2D Texture { get; }
 
-		public virtual Tuple<int, int> Dimensions {
-			get { return Tuple.Create(1, 1); }
+		public virtual Point Dimensions {
+			get { return new Point(1, 1); }
 		}
 
 		public virtual List<SoftObject> BuildRequirements { get { return new List<SoftObject>(); } }
@@ -51,7 +51,7 @@ namespace Cartel.Models {
 
 		protected void Draw(SpriteBatch spriteBatch, int x, int y, float layerDepth) {
 			spriteBatch.Draw(Texture ?? AssetManager.GetDefault<Texture2D>(),
-				new Rectangle(x * World.BlockSize, y * World.BlockSize, World.BlockSize * Dimensions.Item1, World.BlockSize * Dimensions.Item2),
+				new Rectangle(x * World.BlockSize, y * World.BlockSize, World.BlockSize * Dimensions.X, World.BlockSize * Dimensions.Y),
 				CalculateSourceRectangle(),
 				Color.White,
 				0.0f,
@@ -61,7 +61,7 @@ namespace Cartel.Models {
 			);
 
 			if (IsSelected) {
-				ShapeManager.DrawRectangle(spriteBatch, new Rectangle(x * World.BlockSize, y * World.BlockSize, World.BlockSize, World.BlockSize), Color.Transparent, Color.Green);
+				ShapeManager.DrawRectangle(spriteBatch, new Rectangle(x * World.BlockSize, y * World.BlockSize, World.BlockSize, World.BlockSize), Color.Transparent, Color.Red);
 			}
 		}
 

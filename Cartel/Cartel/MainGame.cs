@@ -52,12 +52,15 @@ namespace Cartel {
 
 			guiManager.AddTask("Build Walls", InputTask.BlueprintFactory(InputMode.Line, cell => new Wall(cell)));
 			guiManager.AddTask("Build Floors", InputTask.BlueprintFactory(InputMode.Area, cell => new Floor(cell, FloorType.Concrete)));
+			guiManager.AddTask("Build Light", InputTask.BlueprintFactory(InputMode.Single, cell => new Light(cell)));
 			guiManager.AddTask("Spawn Worker", InputTask.PawnFactory(PawnType.Worker));
 			guiManager.AddTask("Spawn Gardener", InputTask.PawnFactory(PawnType.Gardener));
 			guiManager.AddTask("Add Concrete", InputTask.SoftObjectFactory(SoftObjectType.Concrete, 45));
 			guiManager.AddTask("Create GrowZone", InputTask.ZoneFactory(() => {
 				return new GrowZone(PlantType.Indica);
 			}));
+			ObjectInfo benchInfo = new ObjectInfo(ObjectType.Bench, new Point(2, 1));
+			guiManager.AddTask("Create HardObject", InputTask.BlueprintFactory(InputMode.Single, cell => new HardObject(benchInfo, cell)));
 			guiManager.AddTask("Bulldoze", InputTask.BulldozeFactory());
 		}
 

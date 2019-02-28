@@ -195,7 +195,7 @@ namespace Cartel.Models {
 				return false;
 			}
 
-			if (blueprint.Construct is Structure && (cell.Structure != null || cell.StructureBlueprint != null)) {
+			if (blueprint.Construct is Structure && (cell.Structure != null || cell.StructureBlueprint != null || cell.GetOverlappingStructure() != null)) {
 				return false;
 			} else if (blueprint.Construct is Floor && (cell.Floor != null || cell.FloorBlueprint != null)) {
 				return false;

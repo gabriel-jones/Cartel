@@ -21,7 +21,7 @@ namespace Cartel.Models {
 			get { return 0.8f; }
 		}
 
-		public override Tuple<int, int> Dimensions {
+		public override Point Dimensions {
 			get { return objectInfo.Dimensions; }
 		}
 

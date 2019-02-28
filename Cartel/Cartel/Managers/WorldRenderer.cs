@@ -63,6 +63,15 @@ namespace Cartel.Managers {
 				spriteBatch.Draw(lightTexture, new Rectangle((int)mouseWorldPosition.X - 256, (int)mouseWorldPosition.Y - 256, 512, 512), Color.White);
 			}
 
+			for (int x = (int)originWorldSpace.X; x <= (int)boundsWorldSpace.X; x++) {
+				for (int y = (int)originWorldSpace.Y; y <= (int)boundsWorldSpace.Y; y++) {
+					Cell cell = world.GetCellAt(x, y);
+					if (cell != null && cell.Structure != null && cell.Structure is Light) {
+						spriteBatch.Draw(lightTexture, new Rectangle(cell.X * World.BlockSize - 256, cell.Y * World.BlockSize - 256, 512, 512), Color.White);
+					}
+				}
+			}
+
 			spriteBatch.End();
 			
 			// Draw world
@@ -95,10 +104,11 @@ namespace Cartel.Managers {
 							cell.Structure.Draw(spriteBatch, x, y);
 						}
 
+						if (cell.FloorBlueprint != null) {
+							cell.FloorBlueprint.Draw(spriteBatch, x, y);
+						}
 						if (cell.StructureBlueprint != null) {
 							cell.StructureBlueprint.Draw(spriteBatch, x, y);
-						} else if (cell.FloorBlueprint != null) {
-							cell.FloorBlueprint.Draw(spriteBatch, x, y);
 						}
 
 						if (cell.SoftObject != null) {

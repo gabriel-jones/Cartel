@@ -12,10 +12,6 @@ namespace Cartel.Models {
 	}
 
 	public class Pawn : Interfaces.IDrawable, ISelectable {
-		public enum Facing {
-			North, NorthEast, East, SouthEast, South, SouthWest, West, NorthWest
-		}
-
 		// Fields
 		PawnType type;
 		World world;
@@ -166,23 +162,26 @@ namespace Cartel.Models {
 
 			if (IsSelected) {
 				ShapeManager.DrawCircle(spriteBatch, new Point(x + World.BlockSize / 2, y + World.BlockSize / 2), World.BlockSize / 2, Color.Red);
-			}
 
-			if (pathfinder != null && pathfinder.Path != null) {
-				Cell previous = nextCell;
+				if (pathfinder != null && pathfinder.Path != null) {
+					Cell previous = nextCell;
 
-				foreach (Cell next in pathfinder.Path) {
-					ShapeManager.DrawLine(spriteBatch,
-						new Point(previous.X * World.BlockSize + World.BlockSize / 2, previous.Y * World.BlockSize + World.BlockSize / 2),
-						new Point(next.X * World.BlockSize + World.BlockSize / 2, next.Y * World.BlockSize + World.BlockSize / 2),
-						Color.Magenta
-					);
-					previous = next;
+					foreach (Cell next in pathfinder.Path) {
+						ShapeManager.DrawLine(spriteBatch,
+							new Point(previous.X * World.BlockSize + World.BlockSize / 2, previous.Y * World.BlockSize + World.BlockSize / 2),
+							new Point(next.X * World.BlockSize + World.BlockSize / 2, next.Y * World.BlockSize + World.BlockSize / 2),
+							Color.Magenta
+						);
+						previous = next;
+					}
 				}
 			}
 		}
 
 		public void GoToCell(Cell target) {
+			if (carrying != null) {
+				world.DropSoftObject(this, currentCell, carrying.Count);
+			}
 			AbandonJob();
 			isIdling = false;
 

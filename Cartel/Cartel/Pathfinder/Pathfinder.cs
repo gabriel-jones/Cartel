@@ -21,6 +21,11 @@ namespace Cartel {
 				return;
 			}
 
+			if (endCell == null && endCellPredicate == null) {
+				Console.Error.WriteLine("[Pathfinder Error] There is no end predicate or goal cell to reach");
+				return;
+			}
+
 			if (world.cellGraph == null) {
 				world.cellGraph = new PathfinderCellGraph(world);
 			}
